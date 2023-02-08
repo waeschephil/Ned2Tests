@@ -15,9 +15,14 @@ observation_pose = PoseObject(
     roll=0.25, pitch=1.57, yaw=1.6,
 )
 
-pick_pose = PoseObject(
-    x=0.180, y=0.003, z=0.242,
-    roll=2.935, pitch=1.504, yaw=2.95,
+#pick_pose = PoseObject(
+#    x=0.180, y=0.003, z=0.242,
+#    roll=2.935, pitch=1.504, yaw=2.95,
+#)
+
+pick_pose = PoseObject( #Rampe
+    x=-0.168, y=0.124, z=0.167,
+    roll=-0.021, pitch=1.184, yaw=1.697,
 )
 # Place pose
 place_pose = PoseObject(
@@ -28,22 +33,32 @@ place_pose = PoseObject(
 robot = NiryoRobot(robot_ip_address)
 robot.calibrate_auto()
 
-pos1 = robot.get_target_pose_from_rel(workspace_name, height_offset=0.005, x_rel=0.07, y_rel=0.2, yaw_rel=0)
-pos2 = robot.get_target_pose_from_rel(workspace_name, height_offset=0.005, x_rel=0.55, y_rel=0.2, yaw_rel=0)
-pos3 = robot.get_target_pose_from_rel(workspace_name, height_offset=0.005, x_rel=1.0, y_rel=0.2, yaw_rel=0)
-pos4 = robot.get_target_pose_from_rel(workspace_name, height_offset=0.005, x_rel=0.07, y_rel=0.45, yaw_rel=0)
-pos5 = robot.get_target_pose_from_rel(workspace_name, height_offset=0.005, x_rel=0.55, y_rel=0.5, yaw_rel=0)
-pos6 = robot.get_target_pose_from_rel(workspace_name, height_offset=0.005, x_rel=1.0, y_rel=0.45, yaw_rel=0)
-pos7 = robot.get_target_pose_from_rel(workspace_name, height_offset=0.005, x_rel=0.05, y_rel=0.715, yaw_rel=0)
-pos8 = robot.get_target_pose_from_rel(workspace_name, height_offset=0.005, x_rel=0.53, y_rel=0.715, yaw_rel=0)
-pos9 = robot.get_target_pose_from_rel(workspace_name, height_offset=0.005, x_rel=1.0, y_rel=0.715, yaw_rel=0)
+positions = [
+    robot.get_target_pose_from_rel(workspace_name, height_offset=0.005, x_rel=0.07, y_rel=0.2, yaw_rel=0),
+    robot.get_target_pose_from_rel(workspace_name, height_offset=0.005, x_rel=0.55, y_rel=0.2, yaw_rel=0),
+    robot.get_target_pose_from_rel(workspace_name, height_offset=0.005, x_rel=1.0, y_rel=0.2, yaw_rel=0),
+    robot.get_target_pose_from_rel(workspace_name, height_offset=0.005, x_rel=0.07, y_rel=0.45, yaw_rel=0),
+    robot.get_target_pose_from_rel(workspace_name, height_offset=0.005, x_rel=0.55, y_rel=0.5, yaw_rel=0),
+    robot.get_target_pose_from_rel(workspace_name, height_offset=0.005, x_rel=1.0, y_rel=0.45, yaw_rel=0),
+    robot.get_target_pose_from_rel(workspace_name, height_offset=0.005, x_rel=0.05, y_rel=0.715, yaw_rel=0),
+    robot.get_target_pose_from_rel(workspace_name, height_offset=0.005, x_rel=0.53, y_rel=0.715, yaw_rel=0),
+    robot.get_target_pose_from_rel(workspace_name, height_offset=0.005, x_rel=1.0, y_rel=0.715, yaw_rel=0)
+]
 
 
-def tictactoe_place(pos):
+def tictactoe_place(index):
+    preposition = PoseObject(x=-0.168, y=0.124, z=0.257, roll=-0.014, pitch=1.183, yaw=1.716,)
+    pos = positions[index-1]
+    robot.release_with_tool()
+    robot.move_pose(preposition)
     robot.move_pose(pick_pose)
-    robot.vision_pick("ITM-Test", height_offset=0.005)
+    robot.wait(0.1)
+    robot.grasp_with_tool()
+    robot.move_pose(preposition)
+    #robot.vision_pick("ITM-Test", height_offset=0.005)
     robot.move_pose(observation_pose)
     robot.place_from_pose(pos)
+    robot.move_pose(observation_pose)
 
 
 # --- -------------- --- #
@@ -77,8 +92,12 @@ catch_count = 0
 #    catch_count += 1
 
 
-tictactoe_place(pos1)
-tictactoe_place(pos2)
+tictactoe_place(5)
+tictactoe_place(4)
+tictactoe_place(2)
+tictactoe_place(9)
+tictactoe_place(7)
+tictactoe_place(1)
 
 # robot.place_from_pose(pos5)
 
